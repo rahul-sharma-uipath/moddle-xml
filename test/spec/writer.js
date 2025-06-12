@@ -1174,6 +1174,32 @@ describe('Writer', function() {
       expect(xml).to.eql(expectedXml);
     });
 
+    it('missing $descriptor', function() {
+
+      // given
+      var model = createModel([ 'properties' ]);
+
+      var writer = new Writer({ preamble: true });
+      var root = model.create('props:Root');
+
+      root.get('any').push(model.create('props:Attributes'));
+
+      // force set $descriptor property for test purposes
+      Object.defineProperty(root.any[0], '$descriptor', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+        enumerable: true
+      });
+
+      // when
+      var xml = writer.toXML(root);
+
+      // then
+      expect(xml).to.eql(
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+          '<props:root xmlns:props="http://properties" />');
+    });
   });
 
 
